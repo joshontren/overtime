@@ -515,6 +515,12 @@
       margin-bottom: 0.25rem;
     }
     
+    .batch-actions {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    
     /* Responsive Adjustments */
     @media (max-width: 992px) {
       .dashboard-container {
@@ -539,6 +545,11 @@
       .summary-cards {
         grid-template-columns: 1fr 1fr;
       }
+      
+      .modal-dialog {
+        max-width: 98%;
+        margin: 0.5rem auto;
+      }
     }
     
     @media (max-width: 576px) {
@@ -548,6 +559,15 @@
       
       .dashboard-container {
         padding-bottom: 80px;
+      }
+      
+      .modal-dialog {
+        max-width: 96%;
+        margin: 0.5rem auto;
+      }
+      
+      .form-control, .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
       }
     }
   </style>
@@ -578,13 +598,6 @@
           <li class="nav-item">
             <a class="nav-link" href="/reports">
               <i class="fas fa-chart-bar me-1"></i> Reports
-            </a>
-          </li>
-          <% } %>
-          <% if (user.role === 'admin' || user.role === 'ceo') { %>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <i class="fas fa-users me-1"></i> Users
             </a>
           </li>
           <% } %>
@@ -738,9 +751,9 @@
     <div class="dashboard-card mb-4">
       <div class="dashboard-card-header">
         <h5 class="dashboard-card-title">
-          <i class="fas fa-users"></i> User Hourly Rates
+          <i class="fas fa-users"></i> Employee Hourly Rates
         </h5>
-        <button class="btn btn-outline-primary btn-sm">
+        <button class="btn btn-outline-primary btn-sm d-none d-md-inline-block">
           <i class="fas fa-download me-1"></i> Export
         </button>
       </div>
@@ -750,7 +763,6 @@
             <thead>
               <tr>
                 <th>Username</th>
-                <th>Role</th>
                 <th>Hourly Rate</th>
                 <th>Actions</th>
               </tr>
@@ -759,10 +771,9 @@
               <% users.forEach(function(u) { %>
                 <tr>
                   <td><%= u.username %></td>
-                  <td><span class="status-badge <%= u.role === 'admin' ? 'badge-admin' : u.role === 'ceo' ? 'badge-ceo' : u.role === 'supervisor' ? 'badge-supervisor' : 'badge-pending' %>"><%= u.role %></span></td>
                   <td>$<%= u.hourlyRate ? u.hourlyRate.toFixed(2) : '0.00' %></td>
                   <td>
-                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#hourlyRateModal<%= u._id %>">
+                    <button class="btn btn-sm btn-outline-primary edit-rate-btn" data-bs-toggle="modal" data-bs-target="#hourlyRateModal<%= u._id %>">
                       <i class="fas fa-pencil-alt me-1"></i> Edit
                     </button>
                     
@@ -774,7 +785,7 @@
                             <h5 class="modal-title">Edit Hourly Rate - <%= u.username %></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
-                          <form action="/users/<%= u._id %>/hourly-rate" method="POST">
+                          <form action="/users/<%= u._id %>/hourly-rate" method="POST" class="rate-form">
                             <div class="modal-body">
                               <div class="mb-3">
                                 <label for="hourlyRate" class="form-label">Hourly Rate ($)</label>
@@ -790,37 +801,6 @@
                       </div>
                     </div>
                   </td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <% } else if (user.role === 'tech') { %>
-    <!-- Users with hourly rates section (Tech can view but not edit) -->
-    <div class="dashboard-card mb-4">
-      <div class="dashboard-card-header">
-        <h5 class="dashboard-card-title">
-          <i class="fas fa-users"></i> User Hourly Rates (View Only)
-        </h5>
-      </div>
-      <div class="dashboard-card-body">
-        <div class="table-responsive">
-          <table class="table custom-table">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Hourly Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% users.forEach(function(u) { %>
-                <tr>
-                  <td><%= u.username %></td>
-                  <td><span class="status-badge <%= u.role === 'admin' ? 'badge-admin' : u.role === 'ceo' ? 'badge-ceo' : u.role === 'supervisor' ? 'badge-supervisor' : 'badge-pending' %>"><%= u.role %></span></td>
-                  <td>$<%= u.hourlyRate ? u.hourlyRate.toFixed(2) : '0.00' %></td>
                 </tr>
               <% }); %>
             </tbody>
@@ -872,6 +852,7 @@
               </thead>
               <tbody>
                 <% for (const userId in requestsByUser) { %>
+                  <% if (user.role === 'employee' && userId !== user._id.toString()) continue; %>
                   <tr>
                     <td><%= requestsByUser[userId].username %></td>
                     <td><%= requestsByUser[userId].currentMonthWorkHours ? requestsByUser[userId].currentMonthWorkHours.toFixed(2) : '0.00' %></td>
@@ -881,35 +862,27 @@
                     <% const grossAmount = (requestsByUser[userId].currentMonthPayHours || 0) * hourlyRate; %>
                     <td>$<%= grossAmount.toFixed(2) %></td>
                     
-                    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+                    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech' || (user.role === 'employee' && userId === user._id.toString())) { %>
                       <% const deductions = requestsByUser[userId].currentMonthDeductions || 0; %>
                       <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
                         <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
                       </td>
                       <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
+                      
+                      <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
                       <td>
-                        <div class="btn-group">
-                          <a href="/users/<%= userId %>/print/<%= currentYear %>/<%= currentMonth %>" class="btn btn-sm btn-outline-primary">
+                        <div class="btn-group btn-group-sm">
+                          <a href="/users/<%= userId %>/print/<%= currentYear %>/<%= currentMonth %>" class="btn btn-outline-primary">
                             <i class="fas fa-print me-1"></i> Print
                           </a>
-                          <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deductionModal<%= userId %>">
+                          <% if (user.role === 'admin' || user.role === 'ceo') { %>
+                          <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deductionModal<%= userId %>">
                             <i class="fas fa-minus-circle me-1"></i> Deduction
                           </button>
+                          <% } %>
                         </div>
                       </td>
-                    <% } else if (user.role === 'employee' && userId === user._id.toString()) { %>
-                      <% const deductions = requestsByUser[userId].currentMonthDeductions || 0; %>
-                      <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
-                        <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
-                      </td>
-                      <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
-                    <% } else if (user.role === 'employee' && userId !== user._id.toString()) { %>
-                      <!-- Empty cells for other employees -->
-                      <td>-</td>
-                      <td>-</td>
-                    <% } else if (user.role === 'supervisor') { %>
-                      <!-- Empty cells for supervisors -->
-                      <td colspan="2">-</td>
+                      <% } %>
                     <% } %>
                   </tr>
                 <% } %>
@@ -938,6 +911,7 @@
               </thead>
               <tbody>
                 <% for (const userId in requestsByUser) { %>
+                  <% if (user.role === 'employee' && userId !== user._id.toString()) continue; %>
                   <tr>
                     <td><%= requestsByUser[userId].username %></td>
                     <td><%= requestsByUser[userId].previousMonthWorkHours ? requestsByUser[userId].previousMonthWorkHours.toFixed(2) : '0.00' %></td>
@@ -947,35 +921,27 @@
                     <% const grossAmount = (requestsByUser[userId].previousMonthPayHours || 0) * hourlyRate; %>
                     <td>$<%= grossAmount.toFixed(2) %></td>
                     
-                    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+                    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech' || (user.role === 'employee' && userId === user._id.toString())) { %>
                       <% const deductions = requestsByUser[userId].previousMonthDeductions || 0; %>
                       <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
                         <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
                       </td>
                       <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
+                      
+                      <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
                       <td>
-                        <div class="btn-group">
-                          <a href="/users/<%= userId %>/print/<%= previousYear %>/<%= previousMonth %>" class="btn btn-sm btn-outline-primary">
+                        <div class="btn-group btn-group-sm">
+                          <a href="/users/<%= userId %>/print/<%= previousYear %>/<%= previousMonth %>" class="btn btn-outline-primary">
                             <i class="fas fa-print me-1"></i> Print
                           </a>
-                          <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deductionModalPrev<%= userId %>">
+                          <% if (user.role === 'admin' || user.role === 'ceo') { %>
+                          <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deductionModalPrev<%= userId %>">
                             <i class="fas fa-minus-circle me-1"></i> Deduction
                           </button>
+                          <% } %>
                         </div>
                       </td>
-                    <% } else if (user.role === 'employee' && userId === user._id.toString()) { %>
-                      <% const deductions = requestsByUser[userId].previousMonthDeductions || 0; %>
-                      <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
-                        <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
-                      </td>
-                      <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
-                    <% } else if (user.role === 'employee' && userId !== user._id.toString()) { %>
-                      <!-- Empty cells for other employees -->
-                      <td>-</td>
-                      <td>-</td>
-                    <% } else if (user.role === 'supervisor') { %>
-                      <!-- Empty cells for supervisors -->
-                      <td colspan="2">-</td>
+                      <% } %>
                     <% } %>
                   </tr>
                 <% } %>
@@ -991,10 +957,10 @@
     <div class="section-header">
       <h4 class="section-title">Overtime Requests</h4>
       <div class="btn-group">
-        <button class="btn btn-outline-secondary btn-sm active">All</button>
-        <button class="btn btn-outline-secondary btn-sm">Pending</button>
-        <button class="btn btn-outline-secondary btn-sm">Approved</button>
-        <button class="btn btn-outline-secondary btn-sm">Signed Off</button>
+        <button class="btn btn-outline-secondary btn-sm active filter-btn" data-filter="all">All</button>
+        <button class="btn btn-outline-secondary btn-sm filter-btn" data-filter="pending">Pending</button>
+        <button class="btn btn-outline-secondary btn-sm filter-btn" data-filter="approved">Approved</button>
+        <button class="btn btn-outline-secondary btn-sm filter-btn" data-filter="signed-off">Signed Off</button>
       </div>
     </div>
 
@@ -1002,15 +968,54 @@
       <div class="dashboard-card-body p-0">
         <div class="accordion" id="requestsAccordion">
           <% for (const userId in requestsByUser) { %>
+            <% 
+              // Skip non-employees for admin/supervisor view
+              if ((user.role === 'admin' || user.role === 'supervisor' || user.role === 'ceo' || user.role === 'tech') && 
+                  requestsByUser[userId].role !== 'employee' && userId !== 'deleted-user') continue;
+              
+              // Skip other users for employee view
+              if (user.role === 'employee' && userId !== user._id.toString()) continue;
+            %>
             <div class="accordion-item">
               <h2 class="accordion-header" id="heading<%= userId %>">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= userId %>" aria-expanded="true" aria-controls="collapse<%= userId %>">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= userId %>" aria-expanded="false" aria-controls="collapse<%= userId %>">
                   <%= requestsByUser[userId].username %>
                   <span class="badge bg-primary ms-2"><%= requestsByUser[userId].requests.length %> requests</span>
                 </button>
               </h2>
-              <div id="collapse<%= userId %>" class="accordion-collapse collapse show" aria-labelledby="heading<%= userId %>" data-bs-parent="#requestsAccordion">
+              <div id="collapse<%= userId %>" class="accordion-collapse collapse" aria-labelledby="heading<%= userId %>" data-bs-parent="#requestsAccordion">
                 <div class="accordion-body p-2">
+                  <!-- Batch approval buttons for supervisors, admins, and CEO -->
+                  <% if ((user.role === 'supervisor' || user.role === 'admin' || user.role === 'ceo') && requestsByUser[userId].requests.length > 0) { %>
+                    <div class="batch-actions mb-3">
+                      <% if (user.role === 'supervisor') { 
+                        // Count pending requests
+                        const pendingCount = requestsByUser[userId].requests.filter(req => req.status === 'pending').length;
+                        if (pendingCount > 0) {
+                      %>
+                        <button class="btn btn-success btn-sm batch-approve-btn" data-user-id="<%= userId %>" data-action="supervisor-approve">
+                          <i class="fas fa-check-circle me-1"></i> Approve All Pending (<%= pendingCount %>)
+                        </button>
+                      <% } } else if (user.role === 'admin') { 
+                        // Count supervisor-approved requests
+                        const supervisorApprovedCount = requestsByUser[userId].requests.filter(req => req.status === 'supervisor-approved').length;
+                        if (supervisorApprovedCount > 0) {
+                      %>
+                        <button class="btn btn-success btn-sm batch-approve-btn" data-user-id="<%= userId %>" data-action="admin-approve">
+                          <i class="fas fa-check-circle me-1"></i> Admin Approve All (<%= supervisorApprovedCount %>)
+                        </button>
+                      <% } } else if (user.role === 'ceo') { 
+                        // Count admin-approved requests
+                        const adminApprovedCount = requestsByUser[userId].requests.filter(req => req.status === 'admin-approved').length;
+                        if (adminApprovedCount > 0) {
+                      %>
+                        <button class="btn btn-success btn-sm batch-approve-btn" data-user-id="<%= userId %>" data-action="ceo-signoff">
+                          <i class="fas fa-signature me-1"></i> Sign Off All (<%= adminApprovedCount %>)
+                        </button>
+                      <% } } %>
+                    </div>
+                  <% } %>
+                  
                   <% if (requestsByUser[userId].requests.length === 0) { %>
                     <div class="alert alert-info m-3">No overtime requests found.</div>
                   <% } else { %>
@@ -1099,35 +1104,32 @@
                               
                               <% if (user.role === 'supervisor' && request.status === 'pending') { %>
                                 <!-- Supervisor can approve pending requests -->
-                                <form action="/requests/<%= request._id %>/supervisor-approve" method="POST" class="d-inline">
-                                  <button type="submit" class="btn btn-sm btn-success">
-                                    <i class="fas fa-check-circle me-1"></i> Approve
-                                  </button>
-                                </form>
+                                <button class="btn btn-sm btn-success approval-btn" data-request-id="<%= request._id %>" data-action="supervisor-approve" data-original-text="Approve">
+                                  <i class="fas fa-check-circle me-1"></i> Approve
+                                </button>
                               <% } %>
                               
                               <% if (user.role === 'admin' && request.status === 'supervisor-approved') { %>
                                 <!-- Admin can approve supervisor-approved requests -->
-                                <form action="/requests/<%= request._id %>/admin-approve" method="POST" class="d-inline">
-                                  <button type="submit" class="btn btn-sm btn-success">
-                                    <i class="fas fa-check-circle me-1"></i> Approve
-                                  </button>
-                                </form>
+                                <button class="btn btn-sm btn-success approval-btn" data-request-id="<%= request._id %>" data-action="admin-approve" data-original-text="Approve">
+                                  <i class="fas fa-check-circle me-1"></i> Approve
+                                </button>
                               <% } %>
                               
                               <% if (user.role === 'ceo' && request.status === 'admin-approved') { %>
                                 <!-- CEO can sign off admin-approved requests -->
-                                <form action="/requests/<%= request._id %>/ceo-signoff" method="POST" class="d-inline">
-                                  <button type="submit" class="btn btn-sm btn-success">
-                                    <i class="fas fa-signature me-1"></i> Sign Off
-                                  </button>
-                                </form>
+                                <button class="btn btn-sm btn-success approval-btn" data-request-id="<%= request._id %>" data-action="ceo-signoff" data-original-text="Sign Off">
+                                  <i class="fas fa-signature me-1"></i> Sign Off
+                                </button>
                               <% } %>
                               
                               <% if (user.role === 'tech') { %>
                                 <!-- Tech can edit any request -->
                                 <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editTechModal<%= request._id %>">
                                   <i class="fas fa-tools me-1"></i> Tech Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-tech-btn" data-request-id="<%= request._id %>">
+                                  <i class="fas fa-trash me-1"></i> Delete
                                 </button>
                               <% } %>
                             </div>
@@ -1210,7 +1212,7 @@
                                   <h5 class="modal-title">Tech Edit - Overtime Request</h5>
                                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <form action="/requests/<%= request._id %>/edit-tech" method="POST">
+                                <form action="/requests/<%= request._id %>/edit-tech" method="POST" class="tech-edit-form">
                                   <div class="modal-body">
                                     <div class="mb-3">
                                       <label for="site" class="form-label">Site</label>
@@ -1233,6 +1235,15 @@
                                       <label for="timeOut" class="form-label">Time Out</label>
                                       <input type="datetime-local" class="form-control" id="timeOut" name="timeOut" 
                                              value="<%= new Date(request.timeOut).toISOString().slice(0, 16) %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="status" class="form-label">Status</label>
+                                      <select class="form-select" id="status" name="status">
+                                        <option value="pending" <%= request.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="supervisor-approved" <%= request.status === 'supervisor-approved' ? 'selected' : '' %>>Supervisor Approved</option>
+                                        <option value="admin-approved" <%= request.status === 'admin-approved' ? 'selected' : '' %>>Admin Approved</option>
+                                        <option value="ceo-signed-off" <%= request.status === 'ceo-signed-off' ? 'selected' : '' %>>CEO Signed Off</option>
+                                      </select>
                                     </div>
                                   </div>
                                   <div class="modal-footer">
@@ -1307,14 +1318,14 @@
                 <h5 class="modal-title">Add Deduction - <%= requestsByUser[userId].username %></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <form action="/users/<%= userId %>/deduction" method="POST">
+              <form action="/users/<%= userId %>/deduction" method="POST" class="deduction-form">
                 <div class="modal-body">
                   <input type="hidden" name="year" value="<%= currentYear %>">
                   <input type="hidden" name="month" value="<%= currentMonth %>">
                   
                   <div class="mb-3">
                     <label for="deductionAmount" class="form-label">Deduction Amount ($)</label>
-                    <input type="number" step="0.01" min="0" class="form-control" id="deductionAmount" name="deductionAmount" required>
+                    <input type="number" step="0.01" min="0.01" class="form-control" id="deductionAmount" name="deductionAmount" required>
                   </div>
                   
                   <div class="mb-3">
@@ -1350,18 +1361,18 @@
                 <h5 class="modal-title">Add Deduction - <%= requestsByUser[userId].username %></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <form action="/users/<%= userId %>/deduction" method="POST">
+              <form action="/users/<%= userId %>/deduction" method="POST" class="deduction-form">
                 <div class="modal-body">
                   <input type="hidden" name="year" value="<%= previousYear %>">
                   <input type="hidden" name="month" value="<%= previousMonth %>">
                   
                   <div class="mb-3">
                     <label for="deductionAmountPrev" class="form-label">Deduction Amount ($)</label>
-                    <input type="number" step="0.01" min="0" class="form-control" id="deductionAmountPrev" name="deductionAmount" required>
+                    <input type="number" step="0.01" min="0.01" class="form-control" id="deductionAmountPrev" name="deductionAmount" required>
                   </div>
                   
                   <div class="mb-3">
-                    <label for="deductionReasonPrev" class="form<label for="deductionReasonPrev" class="form-label">Reason for Deduction</label>
+                    <label for="deductionReasonPrev" class="form-label">Reason for Deduction</label>
                     <select class="form-select mb-2" id="deductionReasonPrev" name="deductionReason">
                       <option value="damage">Equipment Damage</option>
                       <option value="absence">Unexcused Absence</option>
@@ -1393,27 +1404,20 @@
         <i class="fas fa-tachometer-alt bottom-nav-icon"></i>
         Dashboard
       </a>
+      <a href="/history" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        History
+      </a>
       <% if (user.role === 'employee') { %>
         <a href="#" class="bottom-nav-item" data-bs-toggle="modal" data-bs-target="#newRequestModal">
           <i class="fas fa-plus-circle bottom-nav-icon"></i>
           New Request
         </a>
-      <% } else { %>
-        <a href="/history" class="bottom-nav-item">
-          <i class="fas fa-history bottom-nav-icon"></i>
-          History
+      <% } else if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+        <a href="/reports" class="bottom-nav-item">
+          <i class="fas fa-chart-bar bottom-nav-icon"></i>
+          Reports
         </a>
-      <% } %>
-      <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
-      <a href="/reports" class="bottom-nav-item">
-        <i class="fas fa-chart-bar bottom-nav-icon"></i>
-        Reports
-      </a>
-      <% } else { %>
-      <a href="/history" class="bottom-nav-item">
-        <i class="fas fa-history bottom-nav-icon"></i>
-        History
-      </a>
       <% } %>
       <a href="/logout" class="bottom-nav-item">
         <i class="fas fa-sign-out-alt bottom-nav-icon"></i>
@@ -1424,114 +1428,6 @@
   </div> <!-- End of dashboard-container -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-    
-    // Add active class to current navigation item
-    document.addEventListener('DOMContentLoaded', function() {
-      const currentLocation = location.pathname;
-      const navItems = document.querySelectorAll('.nav-link');
-      navItems.forEach(item => {
-        if(item.getAttribute('href') === currentLocation) {
-          item.classList.add('active');
-        }
-      });
-    });
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Request filtering functionality
-      const filterButtons = document.querySelectorAll('.btn-outline-secondary');
-      
-      filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Remove active class from all buttons
-          filterButtons.forEach(btn => btn.classList.remove('active'));
-          
-          // Add active class to the clicked button
-          this.classList.add('active');
-          
-          // Get the filter type from the button text
-          const filterType = this.innerText.trim().toLowerCase();
-          
-          // Get all request cards
-          const requestCards = document.querySelectorAll('.request-card');
-          
-          // Show/hide request cards based on the filter
-          requestCards.forEach(card => {
-            if (filterType === 'all') {
-              card.style.display = 'block';
-            } else if (filterType === 'pending') {
-              if (card.classList.contains('request-pending')) {
-                card.style.display = 'block';
-              } else {
-                card.style.display = 'none';
-              }
-            } else if (filterType === 'approved') {
-              if (card.classList.contains('request-supervisor') || card.classList.contains('request-admin')) {
-                card.style.display = 'block';
-              } else {
-                card.style.display = 'none';
-              }
-            } else if (filterType === 'signed off') {
-              if (card.classList.contains('request-ceo')) {
-                card.style.display = 'block';
-              } else {
-                card.style.display = 'none';
-              }
-            }
-          });
-        });
-      });
-
-      // Month switcher functionality
-      const monthDropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
-      const monthDropdownButton = document.getElementById('monthDropdown');
-      
-      if (monthDropdownItems.length > 0 && monthDropdownButton) {
-        monthDropdownItems.forEach(item => {
-          item.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Update the dropdown button text
-            monthDropdownButton.innerText = this.innerText;
-            
-            // Get the month and year from the text
-            const monthYearText = this.innerText.trim();
-            
-            // TODO: Update the monthly summaries based on the selected month
-            // This would typically involve an AJAX call to the server
-            // For now, we'll just reload the page with the month and year as query parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Extract month and year from text (format: "Month YYYY")
-            const parts = monthYearText.split(' ');
-            const month = getMonthNumber(parts[0]);
-            const year = parseInt(parts[1]);
-            
-            urlParams.set('month', month);
-            urlParams.set('year', year);
-            
-            window.location.href = `/dashboard?${urlParams.toString()}`;
-          });
-        });
-      }
-      
-      // Helper function to convert month name to number
-      function getMonthNumber(monthName) {
-        const months = {
-          'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
-          'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11
-        };
-        return months[monthName] || 0;
-      }
-    });
-  </script>
+  <script src="/js/dashboard.js"></script>
 </body>
 </html>
-
