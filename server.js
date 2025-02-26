@@ -1103,3 +1103,55 @@ app.get('/reports/export-users', authenticate, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Export requests data as CSV (add this route before the server start line)
+app.get('/dashboard/export-requests', authenticate, async (req, res) => {
+  try {
+    let query = {};
+    
+    // For employees, only show their own requests
+    if (req.user.role === 'employee') {
+      query.createdBy = req.user._id;
+    }
+    
+    const requests = await Request.find(query)
+      .populate('createdBy', 'username')
+      .populate('approvedBy', 'username')
+      .sort({ timeIn: -1 });
+    
+    // CSV Header
+    let csv = 'Date,Site,Duty,Vehicle,Time In,Time Out,Total Hours,Pay Hours,Status,Created By,Approved By\n';
+    
+    // Add rows for each request
+    for (const request of requests) {
+      const date = new Date(request.timeIn).toLocaleDateString();
+      const timeIn = new Date(request.timeIn).toLocaleTimeString();
+      const timeOut = new Date(request.timeOut).toLocaleTimeString();
+      
+      // Calculate pay hours with multiplier
+      const dayOfWeek = new Date(request.timeIn).getDay();
+      let multiplier = 1;
+      if (dayOfWeek === 0) multiplier = 2; // Sunday
+      if (dayOfWeek === 6) multiplier = 1.5; // Saturday
+      const payHours = request.totalHours * multiplier;
+      
+      // Get status text
+      let statusText = 'Pending';
+      if (request.status === 'supervisor-approved') statusText = 'Supervisor Approved';
+      else if (request.status === 'admin-approved') statusText = 'Admin Approved';
+      else if (request.status === 'ceo-signed-off') statusText = 'CEO Signed Off';
+      else if (request.status === 'rejected') statusText = 'Rejected';
+      
+      // Add row to CSV
+      csv += `"${date}","${request.site}","${request.duty}","${request.vehicle}","${timeIn}","${timeOut}",${request.totalHours.toFixed(2)},${payHours.toFixed(2)},"${statusText}","${request.createdBy ? request.createdBy.username : 'Deleted User'}","${request.approvedBy ? request.approvedBy.username : 'N/A'}"\n`;
+    }
+    
+    // Set headers and send CSV
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=requests_export.csv');
+    res.send(csv);
+  } catch (err) {
+    console.error("Export error:", err);
+    res.status(500).send(err.message);
+  }
+});
