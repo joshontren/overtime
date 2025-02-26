@@ -3,29 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <title>Login - Dedomena Overtime Scheduler</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #c01f28;
+      --secondary-color: #4a4a4a;
+      --background-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --accent-color: #e04653;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-color);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .auth-card {
+      background-color: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      width: 100%;
+      max-width: 900px;
+    }
+    
+    .row {
+      min-height: 500px;
+    }
+    
+    .left-panel {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .logo-container {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .logo-container img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    .right-panel {
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    h1 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+    }
+    
+    .form-floating {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-floating label {
+      color: var(--secondary-color);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.25rem rgba(192, 31, 40, 0.25);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+    
+    .forgot-password {
+      text-align: right;
+      margin-bottom: 1.5rem;
+    }
+    
+    .forgot-password a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    
+    .forgot-password a:hover {
+      color: var(--primary-color);
+    }
+    
+    .register-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    
+    .register-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .footer {
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--secondary-color);
+    }
+    
+    .back-link {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      color: var(--secondary-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .back-link:hover {
+      color: var(--primary-color);
+    }
+    
+    .back-link i {
+      margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 767.98px) {
+      .row {
+        flex-direction: column;
+      }
+      
+      .left-panel {
+        padding: 2rem 1rem;
+      }
+      
+      .right-panel {
+        padding: 2rem 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-5">
-    <div class="card mx-auto p-4 shadow" style="max-width: 400px;">
-      <h2 class="text-center">Login</h2>
-      <form action="/login" method="POST">
-        <div class="mb-3">
-          <input type="text" class="form-control" name="username" placeholder="Username" required>
+  <a href="/" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
+  
+  <div class="main-container">
+    <div class="auth-card">
+      <div class="row g-0">
+        <div class="col-md-5 left-panel">
+          <div class="logo-container">
+            <img src="/images/watermark.png" alt="Dedomena Logo" class="img-fluid">
+          </div>
+          <h2 class="text-center mb-4">Overtime Scheduler</h2>
+          <p class="text-center">Login to access your dashboard and manage overtime requests.</p>
         </div>
-        <div class="mb-3">
-          <input type="password" class="form-control" name="password" placeholder="Password" required>
+        <div class="col-md-7 right-panel">
+          <h1>Welcome Back</h1>
+          <p class="lead mb-4">Please login to your account</p>
+          
+          <form action="/login" method="POST">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+              <label for="username">Username</label>
+            </div>
+            
+            <div class="form-floating">
+              <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+              <label for="password">Password</label>
+            </div>
+            
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+              <label class="form-check-label" for="rememberMe">
+                Remember me
+              </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+            
+            <div class="register-link">
+              Don't have an account? <a href="/register">Register here</a>
+            </div>
+          </form>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
-      <div class="text-center mt-3">
-        <a href="/register">Don't have an account? Register here.</a>
       </div>
     </div>
   </div>
-  <div class="watermark">Dedomena Solutions © 2025</div>
-
+  
+  <div class="footer">
+    Dedomena Solutions © 2025
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

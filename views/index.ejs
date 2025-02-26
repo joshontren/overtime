@@ -3,18 +3,224 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Overtime Scheduler</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <title>Dedomena Overtime Scheduler</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #c01f28;
+      --secondary-color: #4a4a4a;
+      --background-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --accent-color: #e04653;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-color);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .landing-card {
+      background-color: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 1000px;
+      width: 100%;
+    }
+    
+    .row {
+      min-height: 500px;
+    }
+    
+    .left-panel {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .logo-container {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .logo-container img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    .right-panel {
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    h1 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+    }
+    
+    .feature-list {
+      margin-bottom: 2rem;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-icon {
+      background-color: rgba(192, 31, 40, 0.1);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      color: var(--primary-color);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline-primary {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      border-radius: 8px;
+      margin-left: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .footer {
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--secondary-color);
+    }
+    
+    @media (max-width: 767.98px) {
+      .row {
+        flex-direction: column;
+      }
+      
+      .left-panel {
+        padding: 2rem 1rem;
+      }
+      
+      .right-panel {
+        padding: 2rem 1rem;
+      }
+      
+      .btn-container {
+        flex-direction: column;
+      }
+      
+      .btn-outline-primary {
+        margin-left: 0;
+        margin-top: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container text-center">
-    <h1 class="mt-5">Welcome to Dedomena Overtime Scheduler</h1>
-    <div class="mt-4">
-      <a href="/login" class="btn btn-primary">Login</a>
-      <a href="/register" class="btn btn-success">Register</a>
+  <div class="main-container">
+    <div class="landing-card">
+      <div class="row g-0">
+        <div class="col-md-5 left-panel">
+          <div class="logo-container">
+            <img src="/images/watermark.png" alt="Dedomena Logo" class="img-fluid">
+          </div>
+          <h2 class="text-center mb-4">Overtime Scheduler</h2>
+          <p class="text-center">Streamline your overtime management process with our powerful scheduling solution.</p>
+        </div>
+        <div class="col-md-7 right-panel">
+          <h1>Welcome to Dedomena</h1>
+          <p class="lead mb-4">Efficiently manage and track overtime hours across your organization.</p>
+          
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div>
+                <h5 class="mb-0">Time Tracking</h5>
+                <p class="text-muted mb-0">Accurately track overtime hours</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div>
+                <h5 class="mb-0">Approval Workflow</h5>
+                <p class="text-muted mb-0">Multi-level approval system</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div>
+                <h5 class="mb-0">Payment Calculation</h5>
+                <p class="text-muted mb-0">Automatic overtime pay calculation</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="btn-container d-flex">
+            <a href="/login" class="btn btn-primary">Login</a>
+            <a href="/register" class="btn btn-outline-primary">Register</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="watermark">Dedomena Solutions © 2025</div>
+  
+  <div class="footer">
+    Dedomena Solutions © 2025
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

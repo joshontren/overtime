@@ -1,0 +1,240 @@
+/* Dedomena Overtime Scheduler - Shared Styles */
+:root {
+    --primary-color: #c01f28;
+    --primary-light: rgba(192, 31, 40, 0.1);
+    --secondary-color: #4a4a4a;
+    --background-color: #f5f6f8;
+    --card-bg: #ffffff;
+    --accent-color: #e04653;
+    --sidebar-bg: #2a2a2a;
+    --sidebar-active: #c01f28;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --purple-color: #6f42c1;
+    --border-radius: 10px;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    min-height: 100vh;
+  }
+  
+  /* Logo and Branding */
+  .navbar-brand img, .logo-container img {
+    max-height: 40px;
+  }
+  
+  /* Card Styles */
+  .card {
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: none;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.25rem;
+  }
+  
+  /* Button Styles */
+  .btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+  }
+  
+  .btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+  }
+  
+  /* Form Styles */
+  .form-control {
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(192, 31, 40, 0.25);
+    border-color: var(--primary-color);
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: var(--secondary-color);
+  }
+  
+  .form-floating label {
+    color: var(--secondary-color);
+  }
+  
+  /* Status Badges */
+  .status-badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+  }
+  
+  .badge-pending {
+    background-color: var(--warning-color);
+    color: #212529;
+  }
+  
+  .badge-supervisor {
+    background-color: var(--info-color);
+    color: #fff;
+  }
+  
+  .badge-admin {
+    background-color: var(--success-color);
+    color: #fff;
+  }
+  
+  .badge-ceo {
+    background-color: var(--purple-color);
+    color: #fff;
+  }
+  
+  /* Authentication pages (login, register) */
+  .auth-card {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .left-panel {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .right-panel {
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .watermark {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  /* Modal Styles */
+  .modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+  }
+  
+  .modal-title {
+    font-weight: 600;
+    color: var(--secondary-color);
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+  }
+  
+  /* Bottom Navigation for Mobile */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.75rem 0.5rem;
+    z-index: 1000;
+  }
+  
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+    transition: color 0.3s;
+  }
+  
+  .bottom-nav-item:hover, .bottom-nav-item.active {
+    color: var(--primary-color);
+  }
+  
+  .bottom-nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .auth-card .row {
+      flex-direction: column;
+    }
+    
+    .left-panel, .right-panel {
+      padding: 2rem 1rem;
+    }
+    
+    .content-container {
+      padding-bottom: 80px; /* Space for bottom nav */
+    }
+  }

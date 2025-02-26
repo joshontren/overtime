@@ -3,326 +3,1535 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <title>Dashboard - Dedomena Overtime Scheduler</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    .user-summary {
-      cursor: pointer;
-      border: 1px solid #dee2e6;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
+    :root {
+      --primary-color: #c01f28;
+      --primary-light: rgba(192, 31, 40, 0.1);
+      --secondary-color: #4a4a4a;
+      --background-color: #f5f6f8;
+      --card-bg: #ffffff;
+      --accent-color: #e04653;
+      --sidebar-bg: #2a2a2a;
+      --sidebar-active: #c01f28;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --info-color: #17a2b8;
+      --purple-color: #6f42c1;
+      --border-radius: 10px;
     }
-    .user-summary:hover {
-      background-color: #e9ecef;
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-color);
+      min-height: 100vh;
     }
-    .request-history {
-      display: none;
-      margin-left: 20px;
+    
+    /* Navbar Styles */
+    .navbar {
+      background-color: var(--card-bg);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 0.75rem 1.5rem;
     }
-    .highlight-orange {
-      background-color: #ffa500; /* Orange */
+    
+    .navbar-brand img {
+      height: 40px;
     }
-    .highlight-green {
-      background-color: #90ee90; /* Green */
+    
+    .navbar .nav-link {
+      color: var(--secondary-color);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s;
     }
-    /* Additional mobile-specific tweaks if needed */
+    
+    .navbar .nav-link:hover {
+      color: var(--primary-color);
+    }
+    
+    .navbar .nav-link.active {
+      color: var(--primary-color);
+    }
+    
+    .navbar-user {
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    
+    .user-info {
+      line-height: 1.2;
+    }
+    
+    .user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
+    
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--secondary-color);
+    }
+    
+    /* Dashboard Layout */
+    .dashboard-container {
+      padding: 1.5rem;
+    }
+    
+    .section-header {
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .section-title {
+      font-weight: 700;
+      color: var(--secondary-color);
+      margin-bottom: 0;
+    }
+    
+    /* Summary Section */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .summary-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 1.25rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .summary-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .summary-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      font-size: 1.25rem;
+    }
+    
+    .icon-purple {
+      background-color: rgba(111, 66, 193, 0.1);
+      color: var(--purple-color);
+    }
+    
+    .icon-success {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
+    }
+    
+    .icon-warning {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: var(--warning-color);
+    }
+    
+    .icon-info {
+      background-color: rgba(23, 162, 184, 0.1);
+      color: var(--info-color);
+    }
+    
+    .summary-content {
+      flex: 1;
+    }
+    
+    .summary-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .summary-label {
+      font-size: 0.85rem;
+      color: var(--secondary-color);
+      margin-bottom: 0;
+    }
+    
+    /* Card Styles */
+    .dashboard-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    
+    .dashboard-card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .dashboard-card-title {
+      font-weight: 600;
+      margin-bottom: 0;
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+    }
+    
+    .dashboard-card-title i {
+      margin-right: 0.5rem;
+      color: var(--primary-color);
+    }
+    
+    .dashboard-card-body {
+      padding: 1.25rem;
+    }
+    
+    /* Table Styles */
+    .table-responsive {
+      overflow-x: auto;
+    }
+    
+    .custom-table {
+      width: 100%;
+      margin-bottom: 0;
+    }
+    
+    .custom-table th {
+      background-color: rgba(0, 0, 0, 0.02);
+      font-weight: 600;
+      color: var(--secondary-color);
+      border-top: none;
+      padding: 0.75rem 1rem;
+    }
+    
+    .custom-table td {
+      vertical-align: middle;
+      padding: 0.75rem 1rem;
+    }
+    
+    .custom-table tr {
+      transition: background-color 0.3s;
+    }
+    
+    .custom-table tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.015);
+    }
+    
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 0.35em 0.65em;
+      font-size: 0.75em;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25rem;
+    }
+    
+    .badge-pending {
+      background-color: var(--warning-color);
+      color: #212529;
+    }
+    
+    .badge-supervisor {
+      background-color: var(--info-color);
+      color: #fff;
+    }
+    
+    .badge-admin {
+      background-color: var(--success-color);
+      color: #fff;
+    }
+    
+    .badge-ceo {
+      background-color: var(--purple-color);
+      color: #fff;
+    }
+    
+    /* Request Cards */
+    .request-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    
+    .request-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      border-left: 4px solid transparent;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .request-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .request-pending {
+      border-left-color: var(--warning-color);
+    }
+    
+    .request-supervisor {
+      border-left-color: var(--info-color);
+    }
+    
+    .request-admin {
+      border-left-color: var(--success-color);
+    }
+    
+    .request-ceo {
+      border-left-color: var(--purple-color);
+    }
+    
+    .request-card-header {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .request-title {
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+    
+    .request-card-body {
+      padding: 1rem;
+    }
+    
+    .request-info-row {
+      display: flex;
+      margin-bottom: 0.75rem;
+    }
+    
+    .request-info-label {
+      font-weight: 600;
+      width: 100px;
+      color: var(--secondary-color);
+    }
+    
+    .request-info-value {
+      flex: 1;
+    }
+    
+    .request-time {
+      display: flex;
+      background-color: rgba(0, 0, 0, 0.02);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .time-column {
+      flex: 1;
+    }
+    
+    .time-label {
+      font-size: 0.75rem;
+      color: var(--secondary-color);
+      margin-bottom: 0.25rem;
+    }
+    
+    .time-value {
+      font-weight: 600;
+    }
+    
+    .request-hours {
+      display: flex;
+      margin-bottom: 0.75rem;
+    }
+    
+    .hours-item {
+      flex: 1;
+      padding: 0.5rem 0;
+    }
+    
+    .hours-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .hours-label {
+      font-size: 0.75rem;
+      color: var(--secondary-color);
+    }
+    
+    .request-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+    
+    .btn-outline-primary {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    /* Accordion Styles */
+    .accordion-item {
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .accordion-header {
+      margin-bottom: 0;
+    }
+    
+    .accordion-button {
+      padding: 1rem 1.25rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: none !important;
+    }
+    
+    .accordion-button:not(.collapsed) {
+      color: var(--primary-color);
+      background-color: var(--card-bg);
+    }
+    
+    .accordion-button:focus {
+      box-shadow: none;
+      border-color: var(--primary-color);
+    }
+    
+    .accordion-button::after {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23c01f28'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+    
+    .accordion-body {
+      padding: 1rem 1.25rem;
+      background-color: var(--card-bg);
+    }
+    
+    /* Modal Styles */
+    .modal-content {
+      border-radius: var(--border-radius);
+      border: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1rem 1.5rem;
+    }
+    
+    .modal-title {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .modal-footer {
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1rem 1.5rem;
+    }
+    
+    /* Bottom Navigation for Mobile */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--card-bg);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0.5rem;
+      z-index: 1000;
+    }
+    
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--secondary-color);
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+    
+    .bottom-nav-item:hover, .bottom-nav-item.active {
+      color: var(--primary-color);
+    }
+    
+    .bottom-nav-icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .dashboard-container {
+        padding: 1rem;
+      }
+      
+      .request-list {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .navbar-user {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .user-avatar {
+        margin-bottom: 0.5rem;
+      }
+      
+      .summary-cards {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
     @media (max-width: 576px) {
-      .request-history {
-        margin-left: 0;
+      .summary-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-container {
+        padding-bottom: 80px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light sticky-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Overtime Scheduler</a>
+      <a class="navbar-brand" href="/dashboard">
+        <img src="/images/watermark.png" alt="Dedomena Logo">
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
+            <a class="nav-link active" href="/dashboard">
+              <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+            </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/history">
+              <i class="fas fa-history me-1"></i> History
+            </a>
+          </li>
+          <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">
+              <i class="fas fa-chart-bar me-1"></i> Reports
+            </a>
+          </li>
+          <% } %>
+          <% if (user.role === 'admin' || user.role === 'ceo') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fas fa-users me-1"></i> Users
+            </a>
+          </li>
+          <% } %>
         </ul>
+        <div class="navbar-user">
+          <div class="user-avatar">
+            <%= user.username.charAt(0).toUpperCase() %>
+          </div>
+          <div class="user-info">
+            <p class="user-name"><%= user.username %></p>
+            <p class="user-role"><%= user.role %></p>
+          </div>
+          <a href="/logout" class="btn btn-outline-danger btn-sm ms-3">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+          </a>
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="container mt-4">
-    <h1 class="text-center">Welcome, <%= user.username %>!</h1>
-    <h4 class="text-center"> <%= user.role %></h4>
-
-    <!-- Employee/Supervisor: Create Request Form -->
-    <% if (user.role === 'employee' || user.role === 'supervisor') { %>
-      <div class="card p-4 shadow mt-3">
-        <h2>Create a Request</h2>
-        <form action="/requests" method="POST">
-          <div class="mb-3">
-            <input type="text" name="site" class="form-control" placeholder="Site" required>
-          </div>
-          <div class="mb-3">
-            <input type="text" name="duty" class="form-control" placeholder="Duty" required>
-          </div>
-          <div class="mb-3">
-            <input type="text" name="vehicle" class="form-control" placeholder="Vehicle" required>
-          </div>
-          <div class="mb-3">
-            <label>Time In:</label>
-            <input type="datetime-local" name="timeIn" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label>Time Out:</label>
-            <input type="datetime-local" name="timeOut" class="form-control" required>
-          </div>
-          <button type="submit" class="btn btn-primary w-100">Submit Request</button>
-        </form>
+  <!-- Main Dashboard Content -->
+  <div class="dashboard-container">
+    <!-- Summary Section -->
+    <div class="section-header">
+      <h4 class="section-title">Monthly Overview</h4>
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <%= new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }) %> <%= currentYear %>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="monthDropdown" style="max-height: 300px; overflow-y: auto;">
+          <li><a class="dropdown-item" href="/dashboard?month=<%= currentMonth %>&year=<%= currentYear %>">
+            <%= new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }) %> <%= currentYear %>
+          </a></li>
+          <li><a class="dropdown-item" href="/dashboard?month=<%= previousMonth %>&year=<%= previousYear %>">
+            <%= new Date(previousYear, previousMonth).toLocaleString('default', { month: 'long' }) %> <%= previousYear %>
+          </a></li>
+          <% 
+            // Add more month options - 12 months back
+            const today = new Date();
+            for (let i = 1; i <= 12; i++) {
+              // Go back from current month
+              const m = (currentMonth - i + 12) % 12;
+              const y = currentMonth - i < 0 ? currentYear - 1 : currentYear;
+              if ((m !== previousMonth || y !== previousYear) && 
+                  (m !== currentMonth || y !== currentYear)) { // Avoid duplicates
+          %>
+            <li><a class="dropdown-item" href="/dashboard?month=<%= m %>&year=<%= y %>">
+              <%= new Date(y, m).toLocaleString('default', { month: 'long' }) %> <%= y %>
+            </a></li>
+          <% 
+              }
+            }
+          %>
+        </ul>
       </div>
-    <% } %>
-
-    <!-- Overtime Summary -->
-    <h2 class="mt-4">Overtime Summary</h2>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Previous Month Work Hours</th>
-            <th>Previous Month Pay Hours</th>
-            <th>Current Month Work Hours</th>
-            <th>Current Month Pay Hours</th>
-            <th>Total Paid Hours</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (user.role === 'admin' || user.role === 'supervisor' || user.role === 'ceo') { %>
-            <!-- Admins, Supervisors, and CEO: Show all users -->
-            <% for (const userId in requestsByUser) { %>
-              <tr>
-                <td><%= requestsByUser[userId].username %></td>
-                <td><%= requestsByUser[userId].previousMonthWorkHours.toFixed(2) %></td>
-                <td><%= requestsByUser[userId].previousMonthPayHours.toFixed(2) %></td>
-                <td><%= requestsByUser[userId].currentMonthWorkHours.toFixed(2) %></td>
-                <td><%= requestsByUser[userId].currentMonthPayHours.toFixed(2) %></td>
-                <td><%= requestsByUser[userId].totalPaidHours.toFixed(2) %></td>
-              </tr>
-            <% } %>
-          <% } else { %>
-            <!-- Employees: Show only their own data -->
-            <tr>
-              <td><%= requestsByUser[user._id].username %></td>
-              <td><%= requestsByUser[user._id].previousMonthWorkHours.toFixed(2) %></td>
-              <td><%= requestsByUser[user._id].previousMonthPayHours.toFixed(2) %></td>
-              <td><%= requestsByUser[user._id].currentMonthWorkHours.toFixed(2) %></td>
-              <td><%= requestsByUser[user._id].currentMonthPayHours.toFixed(2) %></td>
-              <td><%= requestsByUser[user._id].totalPaidHours.toFixed(2) %></td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
     </div>
-
-    <!-- Request History -->
-    <h2 class="mt-4">Request History</h2>
-    <% if (user.role === 'admin' || user.role === 'supervisor' || user.role === 'ceo') { %>
-      <!-- Admins, Supervisors, and CEO: Show all users' requests -->
-      <% for (const userId in requestsByUser) { %>
-        <% const requiresAction = requestsByUser[userId].requests.some(request => { 
-          if (user.role === 'supervisor' && request.status === 'pending') return true;
-          if (user.role === 'admin' && request.status === 'supervisor-approved') return true;
-          if (user.role === 'ceo' && request.status === 'admin-approved' && !request.ceoSignOff) return true;
-          return false;
-        }); %>
-        <div class="user-summary <%= requiresAction ? 'highlight-orange' : 'highlight-green' %>" onclick="toggleRequests('<%= userId %>')">
-          <strong><%= requestsByUser[userId].username %></strong>
+    
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-icon icon-purple">
+          <i class="far fa-clock"></i>
         </div>
-        <div id="requests-<%= userId %>" class="request-history">
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
+        <div class="summary-content">
+          <% 
+            // Calculate total work hours for current month
+            let totalWorkHours = 0;
+            for (const userId in requestsByUser) {
+              totalWorkHours += requestsByUser[userId].currentMonthWorkHours || 0;
+            }
+          %>
+          <h2 class="summary-value"><%= totalWorkHours.toFixed(2) %></h2>
+          <p class="summary-label">Total Work Hours</p>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon icon-success">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="summary-content">
+          <% 
+            // Calculate total pay hours for current month
+            let totalPayHours = 0;
+            for (const userId in requestsByUser) {
+              totalPayHours += requestsByUser[userId].currentMonthPayHours || 0;
+            }
+          %>
+          <h2 class="summary-value"><%= totalPayHours.toFixed(2) %></h2>
+          <p class="summary-label">Total Pay Hours</p>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon icon-warning">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+        <div class="summary-content">
+          <% 
+            // Count pending requests for the current month
+            let pendingRequests = 0;
+            for (const userId in requestsByUser) {
+              pendingRequests += requestsByUser[userId].requests.filter(req => {
+                const reqDate = new Date(req.timeIn);
+                return req.status === 'pending' && 
+                       reqDate.getMonth() === currentMonth && 
+                       reqDate.getFullYear() === currentYear;
+              }).length;
+            }
+          %>
+          <h2 class="summary-value"><%= pendingRequests %></h2>
+          <p class="summary-label">Pending Requests</p>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon icon-info">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="summary-content">
+          <% 
+            // Count approved requests for the current month
+            let approvedRequests = 0;
+            for (const userId in requestsByUser) {
+              approvedRequests += requestsByUser[userId].requests.filter(req => {
+                const reqDate = new Date(req.timeIn);
+                return (req.status === 'supervisor-approved' || 
+                        req.status === 'admin-approved' || 
+                        req.status === 'ceo-signed-off') &&
+                       reqDate.getMonth() === currentMonth && 
+                       reqDate.getFullYear() === currentYear;
+              }).length;
+            }
+          %>
+          <h2 class="summary-value"><%= approvedRequests %></h2>
+          <p class="summary-label">Approved Requests</p>
+        </div>
+      </div>
+    </div>
+    
+    <% if (user.role === 'employee') { %>
+    <!-- Add New Request Button - Only for employees -->
+    <div class="mb-4">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newRequestModal">
+        <i class="fas fa-plus-circle me-1"></i> Add New Overtime Request
+      </button>
+    </div>
+    <% } %>
+    
+    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+    <!-- Users with hourly rates section (Admin/CEO only) -->
+    <div class="dashboard-card mb-4">
+      <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">
+          <i class="fas fa-users"></i> User Hourly Rates
+        </h5>
+        <button class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-download me-1"></i> Export
+        </button>
+      </div>
+      <div class="dashboard-card-body">
+        <div class="table-responsive">
+          <table class="table custom-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Hourly Rate</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function(u) { %>
                 <tr>
-                  <th>Created By</th>
-                  <th>Site</th>
-                  <th>Duty</th>
-                  <th>Vehicle</th>
-                  <th>Time In</th>
-                  <th>Time Out</th>
-                  <th>Total Hours</th>
-                  <th>Work Hours</th>
-                  <th>Pay Hours</th>
-                  <th>Status</th>
-                  <th>CEO Sign-Off</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% requestsByUser[userId].requests.forEach(request => { %>
-                  <tr>
-                    <td><%= request.createdBy ? request.createdBy.username : 'N/A' %></td>
-                    <td><%= request.site %></td>
-                    <td><%= request.duty %></td>
-                    <td><%= request.vehicle %></td>
-                    <td><%= request.timeIn.toLocaleString() %></td>
-                    <td><%= request.timeOut.toLocaleString() %></td>
-                    <td><%= request.totalHours.toFixed(2) %></td>
-                    <td><%= request.totalHours.toFixed(2) %></td> <!-- Work Hours (same as total hours) -->
-                    <td>
-                      <% 
-                        const requestDate = new Date(request.timeIn);
-                        const dayOfWeek = requestDate.getDay();
-                        let payHours = request.totalHours;
-                        if (dayOfWeek === 0) {
-                          payHours = request.totalHours * 2;
-                        } else if (dayOfWeek === 6) {
-                          payHours = request.totalHours * 1.5;
-                        }
-                      %>
-                      <%= payHours.toFixed(2) %>
-                    </td>
-                    <td><%= request.status %></td>
-                    <td><%= request.ceoSignOff ? 'Yes' : 'No' %></td>
-                    <td>
-                      <% if (user.role === 'supervisor' && request.status === 'pending') { %>
-                        <form action="/requests/<%= request._id %>/supervisor-approve" method="POST" class="d-inline">
-                          <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                      <% } else if (user.role === 'admin' && request.status === 'supervisor-approved') { %>
-                        <form action="/requests/<%= request._id %>/admin-approve" method="POST" class="d-inline">
-                          <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                      <% } else if (user.role === 'ceo' && request.status === 'admin-approved' && !request.ceoSignOff) { %>
-                        <form action="/requests/<%= request._id %>/ceo-signoff" method="POST" class="d-inline">
-                          <button type="submit" class="btn btn-warning">Sign Off</button>
-                        </form>
-                      <% } %>
-                      <% if (user.role === 'ceo') { %>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRequestModal-<%= request._id %>">
-                          Edit
-                        </button>
-                      <% } %>
-                    </td>
-                  </tr>
-
-                  <!-- Edit Request Modal -->
-                  <div class="modal fade" id="editRequestModal-<%= request._id %>" tabindex="-1" aria-labelledby="editRequestModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="editRequestModalLabel">Edit Request</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <form action="/requests/<%= request._id %>/edit" method="POST">
-                            <div class="mb-3">
-                              <label>Site:</label>
-                              <input type="text" name="site" class="form-control" value="<%= request.site %>" required>
-                            </div>
-                            <div class="mb-3">
-                              <label>Duty:</label>
-                              <input type="text" name="duty" class="form-control" value="<%= request.duty %>" required>
-                            </div>
-                            <div class="mb-3">
-                              <label>Vehicle:</label>
-                              <input type="text" name="vehicle" class="form-control" value="<%= request.vehicle %>" required>
-                            </div>
-                            <div class="mb-3">
-                              <label>Time In:</label>
-                              <input type="datetime-local" name="timeIn" class="form-control" value="<%= request.timeIn.toISOString().slice(0, 16) %>" required>
-                            </div>
-                            <div class="mb-3">
-                              <label>Time Out:</label>
-                              <input type="datetime-local" name="timeOut" class="form-control" value="<%= request.timeOut.toISOString().slice(0, 16) %>" required>
+                  <td><%= u.username %></td>
+                  <td><span class="status-badge <%= u.role === 'admin' ? 'badge-admin' : u.role === 'ceo' ? 'badge-ceo' : u.role === 'supervisor' ? 'badge-supervisor' : 'badge-pending' %>"><%= u.role %></span></td>
+                  <td>$<%= u.hourlyRate ? u.hourlyRate.toFixed(2) : '0.00' %></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#hourlyRateModal<%= u._id %>">
+                      <i class="fas fa-pencil-alt me-1"></i> Edit
+                    </button>
+                    
+                    <!-- Hourly Rate Edit Modal -->
+                    <div class="modal fade" id="hourlyRateModal<%= u._id %>" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Edit Hourly Rate - <%= u.username %></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <form action="/users/<%= u._id %>/hourly-rate" method="POST">
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <label for="hourlyRate" class="form-label">Hourly Rate ($)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="hourlyRate" name="hourlyRate" value="<%= u.hourlyRate ? u.hourlyRate.toFixed(2) : '0.00' %>" required>
+                              </div>
                             </div>
                             <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                               <button type="submit" class="btn btn-primary">Save Changes</button>
                             </div>
                           </form>
                         </div>
                       </div>
                     </div>
-                  </div>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      <% } %>
-    <% } else { %>
-      <!-- Employees: Show only their own requests -->
-      <div class="user-summary highlight-green" onclick="toggleRequests('<%= user._id %>')">
-        <strong><%= requestsByUser[user._id].username %></strong>
-      </div>
-      <div id="requests-<%= user._id %>" class="request-history">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Created By</th>
-                <th>Site</th>
-                <th>Duty</th>
-                <th>Vehicle</th>
-                <th>Time In</th>
-                <th>Time Out</th>
-                <th>Total Hours</th>
-                <th>Work Hours</th>
-                <th>Pay Hours</th>
-                <th>Status</th>
-                <th>CEO Sign-Off</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% requestsByUser[user._id].requests.forEach(request => { %>
-                <tr>
-                  <td><%= request.createdBy ? request.createdBy.username : 'N/A' %></td>
-                  <td><%= request.site %></td>
-                  <td><%= request.duty %></td>
-                  <td><%= request.vehicle %></td>
-                  <td><%= request.timeIn.toLocaleString() %></td>
-                  <td><%= request.timeOut.toLocaleString() %></td>
-                  <td><%= request.totalHours.toFixed(2) %></td>
-                  <td><%= request.totalHours.toFixed(2) %></td>
-                  <td>
-                    <% 
-                      const requestDate = new Date(request.timeIn);
-                      const dayOfWeek = requestDate.getDay();
-                      let payHours = request.totalHours;
-                      if (dayOfWeek === 0) {
-                        payHours = request.totalHours * 2;
-                      } else if (dayOfWeek === 6) {
-                        payHours = request.totalHours * 1.5;
-                      }
-                    %>
-                    <%= payHours.toFixed(2) %>
                   </td>
-                  <td><%= request.status %></td>
-                  <td><%= request.ceoSignOff ? 'Yes' : 'No' %></td>
                 </tr>
-              <% }) %>
+              <% }); %>
             </tbody>
           </table>
         </div>
       </div>
+    </div>
+    <% } else if (user.role === 'tech') { %>
+    <!-- Users with hourly rates section (Tech can view but not edit) -->
+    <div class="dashboard-card mb-4">
+      <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">
+          <i class="fas fa-users"></i> User Hourly Rates (View Only)
+        </h5>
+      </div>
+      <div class="dashboard-card-body">
+        <div class="table-responsive">
+          <table class="table custom-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Hourly Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function(u) { %>
+                <tr>
+                  <td><%= u.username %></td>
+                  <td><span class="status-badge <%= u.role === 'admin' ? 'badge-admin' : u.role === 'ceo' ? 'badge-ceo' : u.role === 'supervisor' ? 'badge-supervisor' : 'badge-pending' %>"><%= u.role %></span></td>
+                  <td>$<%= u.hourlyRate ? u.hourlyRate.toFixed(2) : '0.00' %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <% } %>
+    
+    <!-- Monthly Summaries Section -->
+  <div class="dashboard-card mb-4">
+    <div class="dashboard-card-header">
+      <h5 class="dashboard-card-title">
+        <i class="fas fa-calendar-alt"></i> Monthly Summaries
+      </h5>
+    </div>
+    <div class="dashboard-card-body">
+      <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="current-tab" data-bs-toggle="tab" data-bs-target="#current" type="button" role="tab" aria-controls="current" aria-selected="true">
+            Current Month (<%= new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }) %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="previous-tab" data-bs-toggle="tab" data-bs-target="#previous" type="button" role="tab" aria-controls="previous" aria-selected="false">
+            Previous Month (<%= new Date(previousYear, previousMonth).toLocaleString('default', { month: 'long' }) %>)
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="current" role="tabpanel" aria-labelledby="current-tab">
+          <div class="table-responsive">
+            <table class="table custom-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Work Hours</th>
+                  <th>Pay Hours</th>
+                  <th>Amount</th>
+                  <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+                    <th>Deductions</th>
+                    <th>Final Amount</th>
+                    <th>Actions</th>
+                  <% } else if (user.role === 'employee') { %>
+                    <th>Deductions</th>
+                    <th>Final Pay</th>
+                  <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (const userId in requestsByUser) { %>
+                  <tr>
+                    <td><%= requestsByUser[userId].username %></td>
+                    <td><%= requestsByUser[userId].currentMonthWorkHours ? requestsByUser[userId].currentMonthWorkHours.toFixed(2) : '0.00' %></td>
+                    <td><%= requestsByUser[userId].currentMonthPayHours ? requestsByUser[userId].currentMonthPayHours.toFixed(2) : '0.00' %></td>
+                    
+                    <% const hourlyRate = userHourlyRates[userId] || 0; %>
+                    <% const grossAmount = (requestsByUser[userId].currentMonthPayHours || 0) * hourlyRate; %>
+                    <td>$<%= grossAmount.toFixed(2) %></td>
+                    
+                    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+                      <% const deductions = requestsByUser[userId].currentMonthDeductions || 0; %>
+                      <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
+                        <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
+                      </td>
+                      <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="/users/<%= userId %>/print/<%= currentYear %>/<%= currentMonth %>" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-print me-1"></i> Print
+                          </a>
+                          <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deductionModal<%= userId %>">
+                            <i class="fas fa-minus-circle me-1"></i> Deduction
+                          </button>
+                        </div>
+                      </td>
+                    <% } else if (user.role === 'employee' && userId === user._id.toString()) { %>
+                      <% const deductions = requestsByUser[userId].currentMonthDeductions || 0; %>
+                      <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
+                        <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
+                      </td>
+                      <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
+                    <% } else if (user.role === 'employee' && userId !== user._id.toString()) { %>
+                      <!-- Empty cells for other employees -->
+                      <td>-</td>
+                      <td>-</td>
+                    <% } else if (user.role === 'supervisor') { %>
+                      <!-- Empty cells for supervisors -->
+                      <td colspan="2">-</td>
+                    <% } %>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="previous" role="tabpanel" aria-labelledby="previous-tab">
+          <div class="table-responsive">
+            <table class="table custom-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Work Hours</th>
+                  <th>Pay Hours</th>
+                  <th>Amount</th>
+                  <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+                    <th>Deductions</th>
+                    <th>Final Amount</th>
+                    <th>Actions</th>
+                  <% } else if (user.role === 'employee') { %>
+                    <th>Deductions</th>
+                    <th>Final Pay</th>
+                  <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (const userId in requestsByUser) { %>
+                  <tr>
+                    <td><%= requestsByUser[userId].username %></td>
+                    <td><%= requestsByUser[userId].previousMonthWorkHours ? requestsByUser[userId].previousMonthWorkHours.toFixed(2) : '0.00' %></td>
+                    <td><%= requestsByUser[userId].previousMonthPayHours ? requestsByUser[userId].previousMonthPayHours.toFixed(2) : '0.00' %></td>
+                    
+                    <% const hourlyRate = userHourlyRates[userId] || 0; %>
+                    <% const grossAmount = (requestsByUser[userId].previousMonthPayHours || 0) * hourlyRate; %>
+                    <td>$<%= grossAmount.toFixed(2) %></td>
+                    
+                    <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+                      <% const deductions = requestsByUser[userId].previousMonthDeductions || 0; %>
+                      <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
+                        <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
+                      </td>
+                      <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="/users/<%= userId %>/print/<%= previousYear %>/<%= previousMonth %>" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-print me-1"></i> Print
+                          </a>
+                          <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deductionModalPrev<%= userId %>">
+                            <i class="fas fa-minus-circle me-1"></i> Deduction
+                          </button>
+                        </div>
+                      </td>
+                    <% } else if (user.role === 'employee' && userId === user._id.toString()) { %>
+                      <% const deductions = requestsByUser[userId].previousMonthDeductions || 0; %>
+                      <td class="<%= deductions > 0 ? 'text-danger' : '' %>">
+                        <%= deductions > 0 ? '-$' + deductions.toFixed(2) : '$0.00' %>
+                      </td>
+                      <td class="fw-bold">$<%= (grossAmount - deductions).toFixed(2) %></td>
+                    <% } else if (user.role === 'employee' && userId !== user._id.toString()) { %>
+                      <!-- Empty cells for other employees -->
+                      <td>-</td>
+                      <td>-</td>
+                    <% } else if (user.role === 'supervisor') { %>
+                      <!-- Empty cells for supervisors -->
+                      <td colspan="2">-</td>
+                    <% } %>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+    
+    <!-- Overtime Requests Section -->
+    <div class="section-header">
+      <h4 class="section-title">Overtime Requests</h4>
+      <div class="btn-group">
+        <button class="btn btn-outline-secondary btn-sm active">All</button>
+        <button class="btn btn-outline-secondary btn-sm">Pending</button>
+        <button class="btn btn-outline-secondary btn-sm">Approved</button>
+        <button class="btn btn-outline-secondary btn-sm">Signed Off</button>
+      </div>
+    </div>
 
-  <!-- Watermark -->
-  <div class="watermark">Dedomena Solutions © 2025</div>
+    <div class="dashboard-card">
+      <div class="dashboard-card-body p-0">
+        <div class="accordion" id="requestsAccordion">
+          <% for (const userId in requestsByUser) { %>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading<%= userId %>">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= userId %>" aria-expanded="true" aria-controls="collapse<%= userId %>">
+                  <%= requestsByUser[userId].username %>
+                  <span class="badge bg-primary ms-2"><%= requestsByUser[userId].requests.length %> requests</span>
+                </button>
+              </h2>
+              <div id="collapse<%= userId %>" class="accordion-collapse collapse show" aria-labelledby="heading<%= userId %>" data-bs-parent="#requestsAccordion">
+                <div class="accordion-body p-2">
+                  <% if (requestsByUser[userId].requests.length === 0) { %>
+                    <div class="alert alert-info m-3">No overtime requests found.</div>
+                  <% } else { %>
+                    <div class="request-list">
+                      <% requestsByUser[userId].requests.forEach(function(request) { %>
+                        <% 
+                          let statusClass = 'request-pending';
+                          if (request.status === 'supervisor-approved') statusClass = 'request-supervisor';
+                          else if (request.status === 'admin-approved') statusClass = 'request-admin';
+                          else if (request.status === 'ceo-signed-off') statusClass = 'request-ceo';
+                        %>
+                        <div class="request-card <%= statusClass %>">
+                          <div class="request-card-header">
+                            <h6 class="request-title"><%= request.site %></h6>
+                            <% 
+                              let statusBadge = 'badge-pending';
+                              let statusText = 'Pending';
+                              if (request.status === 'supervisor-approved') {
+                                statusBadge = 'badge-supervisor';
+                                statusText = 'Supervisor Approved';
+                              } else if (request.status === 'admin-approved') {
+                                statusBadge = 'badge-admin';
+                                statusText = 'Admin Approved';
+                              } else if (request.status === 'ceo-signed-off') {
+                                statusBadge = 'badge-ceo';
+                                statusText = 'CEO Signed Off';
+                              }
+                            %>
+                            <span class="status-badge <%= statusBadge %>"><%= statusText %></span>
+                          </div>
+                          <div class="request-card-body">
+                            <div class="request-info-row">
+                              <div class="request-info-label">Duty:</div>
+                              <div class="request-info-value"><%= request.duty %></div>
+                            </div>
+                            <div class="request-info-row">
+                              <div class="request-info-label">Vehicle:</div>
+                              <div class="request-info-value"><%= request.vehicle %></div>
+                            </div>
+                            
+                            <div class="request-time">
+                              <div class="time-column">
+                                <div class="time-label">Time In:</div>
+                                <div class="time-value"><%= new Date(request.timeIn).toLocaleString() %></div>
+                              </div>
+                              <div class="time-column">
+                                <div class="time-label">Time Out:</div>
+                                <div class="time-value"><%= new Date(request.timeOut).toLocaleString() %></div>
+                              </div>
+                            </div>
+                            
+                            <div class="request-hours">
+                              <div class="hours-item">
+                                <div class="hours-value"><%= request.totalHours.toFixed(2) %></div>
+                                <div class="hours-label">Total Hours</div>
+                              </div>
+                              <div class="hours-item">
+                                <% 
+                                  const day = new Date(request.timeIn).getDay();
+                                  let multiplier = 1;
+                                  if (day === 0) multiplier = 2; // Sunday
+                                  if (day === 6) multiplier = 1.5; // Saturday
+                                  const payHours = request.totalHours * multiplier;
+                                %>
+                                <div class="hours-value"><%= payHours.toFixed(2) %></div>
+                                <div class="hours-label">
+                                  Pay Hours
+                                  <% if (multiplier > 1) { %>
+                                    <span class="text-muted">(<%= multiplier %>x)</span>
+                                  <% } %>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Action buttons based on user role and request status -->
+                            <div class="request-actions">
+                              <% if (user.role === 'employee' && request.status === 'pending' && request.createdBy && request.createdBy._id.toString() === user._id.toString()) { %>
+                                <!-- Employee can edit/delete their own pending requests -->
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editRequestModal<%= request._id %>">
+                                  <i class="fas fa-edit me-1"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRequestModal<%= request._id %>">
+                                  <i class="fas fa-trash me-1"></i> Delete
+                                </button>
+                              <% } %>
+                              
+                              <% if (user.role === 'supervisor' && request.status === 'pending') { %>
+                                <!-- Supervisor can approve pending requests -->
+                                <form action="/requests/<%= request._id %>/supervisor-approve" method="POST" class="d-inline">
+                                  <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check-circle me-1"></i> Approve
+                                  </button>
+                                </form>
+                              <% } %>
+                              
+                              <% if (user.role === 'admin' && request.status === 'supervisor-approved') { %>
+                                <!-- Admin can approve supervisor-approved requests -->
+                                <form action="/requests/<%= request._id %>/admin-approve" method="POST" class="d-inline">
+                                  <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check-circle me-1"></i> Approve
+                                  </button>
+                                </form>
+                              <% } %>
+                              
+                              <% if (user.role === 'ceo' && request.status === 'admin-approved') { %>
+                                <!-- CEO can sign off admin-approved requests -->
+                                <form action="/requests/<%= request._id %>/ceo-signoff" method="POST" class="d-inline">
+                                  <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-signature me-1"></i> Sign Off
+                                  </button>
+                                </form>
+                              <% } %>
+                              
+                              <% if (user.role === 'tech') { %>
+                                <!-- Tech can edit any request -->
+                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editTechModal<%= request._id %>">
+                                  <i class="fas fa-tools me-1"></i> Tech Edit
+                                </button>
+                              <% } %>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Modal for Employee Edit Request -->
+                        <% if (user.role === 'employee' && request.status === 'pending' && request.createdBy && request.createdBy._id.toString() === user._id.toString()) { %>
+                          <div class="modal fade" id="editRequestModal<%= request._id %>" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Edit Overtime Request</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="/requests/<%= request._id %>/edit-employee" method="POST">
+                                  <div class="modal-body">
+                                    <div class="mb-3">
+                                      <label for="site" class="form-label">Site</label>
+                                      <input type="text" class="form-control" id="site" name="site" value="<%= request.site %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="duty" class="form-label">Duty</label>
+                                      <input type="text" class="form-control" id="duty" name="duty" value="<%= request.duty %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="vehicle" class="form-label">Vehicle</label>
+                                      <input type="text" class="form-control" id="vehicle" name="vehicle" value="<%= request.vehicle %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="timeIn" class="form-label">Time In</label>
+                                      <input type="datetime-local" class="form-control" id="timeIn" name="timeIn" 
+                                             value="<%= new Date(request.timeIn).toISOString().slice(0, 16) %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="timeOut" class="form-label">Time Out</label>
+                                      <input type="datetime-local" class="form-control" id="timeOut" name="timeOut" 
+                                             value="<%= new Date(request.timeOut).toISOString().slice(0, 16) %>" required>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        <% } %>
+                        
+                        <!-- Modal for Employee Delete Request -->
+                        <% if (user.role === 'employee' && request.status === 'pending' && request.createdBy && request.createdBy._id.toString() === user._id.toString()) { %>
+                          <div class="modal fade" id="deleteRequestModal<%= request._id %>" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Delete Overtime Request</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>Are you sure you want to delete this overtime request? This action cannot be undone.</p>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                  <form action="/requests/<%= request._id %>/delete" method="POST">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        <% } %>
+                        
+                        <!-- Modal for Tech Edit Request -->
+                        <% if (user.role === 'tech') { %>
+                          <div class="modal fade" id="editTechModal<%= request._id %>" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Tech Edit - Overtime Request</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="/requests/<%= request._id %>/edit-tech" method="POST">
+                                  <div class="modal-body">
+                                    <div class="mb-3">
+                                      <label for="site" class="form-label">Site</label>
+                                      <input type="text" class="form-control" id="site" name="site" value="<%= request.site %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="duty" class="form-label">Duty</label>
+                                      <input type="text" class="form-control" id="duty" name="duty" value="<%= request.duty %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="vehicle" class="form-label">Vehicle</label>
+                                      <input type="text" class="form-control" id="vehicle" name="vehicle" value="<%= request.vehicle %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="timeIn" class="form-label">Time In</label>
+                                      <input type="datetime-local" class="form-control" id="timeIn" name="timeIn" 
+                                             value="<%= new Date(request.timeIn).toISOString().slice(0, 16) %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="timeOut" class="form-label">Time Out</label>
+                                      <input type="datetime-local" class="form-control" id="timeOut" name="timeOut" 
+                                             value="<%= new Date(request.timeOut).toISOString().slice(0, 16) %>" required>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-warning">Save Tech Changes</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        <% } %>
+                      <% }); %>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Request Modal - For employees only -->
+    <% if (user.role === 'employee') { %>
+      <div class="modal fade" id="newRequestModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">New Overtime Request</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/requests" method="POST">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="site" class="form-label">Site</label>
+                  <input type="text" class="form-control" id="site" name="site" required>
+                </div>
+                <div class="mb-3">
+                  <label for="duty" class="form-label">Duty</label>
+                  <input type="text" class="form-control" id="duty" name="duty" required>
+                </div>
+                <div class="mb-3">
+                  <label for="vehicle" class="form-label">Vehicle</label>
+                  <input type="text" class="form-control" id="vehicle" name="vehicle" required>
+                </div>
+                <div class="mb-3">
+                  <label for="timeIn" class="form-label">Time In</label>
+                  <input type="datetime-local" class="form-control" id="timeIn" name="timeIn" required>
+                </div>
+                <div class="mb-3">
+                  <label for="timeOut" class="form-label">Time Out</label>
+                  <input type="datetime-local" class="form-control" id="timeOut" name="timeOut" required>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Add Deduction Modals for each user - current month -->
+    <% if (user.role === 'admin' || user.role === 'ceo') { %>
+      <% for (const userId in requestsByUser) { %>
+        <div class="modal fade" id="deductionModal<%= userId %>" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add Deduction - <%= requestsByUser[userId].username %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form action="/users/<%= userId %>/deduction" method="POST">
+                <div class="modal-body">
+                  <input type="hidden" name="year" value="<%= currentYear %>">
+                  <input type="hidden" name="month" value="<%= currentMonth %>">
+                  
+                  <div class="mb-3">
+                    <label for="deductionAmount" class="form-label">Deduction Amount ($)</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="deductionAmount" name="deductionAmount" required>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="deductionReason" class="form-label">Reason for Deduction</label>
+                    <select class="form-select mb-2" id="deductionReason" name="deductionReason">
+                      <option value="damage">Equipment Damage</option>
+                      <option value="absence">Unexcused Absence</option>
+                      <option value="error">Error Correction</option>
+                      <option value="other">Other (specify below)</option>
+                    </select>
+                    <textarea class="form-control" id="deductionNote" name="deductionNote" rows="3" placeholder="Additional details about the deduction..."></textarea>
+                  </div>
+                  
+                  <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    This deduction will be applied to the current month's payment for this employee.
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-danger">Apply Deduction</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Deduction Modal for Previous Month -->
+        <div class="modal fade" id="deductionModalPrev<%= userId %>" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add Deduction - <%= requestsByUser[userId].username %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form action="/users/<%= userId %>/deduction" method="POST">
+                <div class="modal-body">
+                  <input type="hidden" name="year" value="<%= previousYear %>">
+                  <input type="hidden" name="month" value="<%= previousMonth %>">
+                  
+                  <div class="mb-3">
+                    <label for="deductionAmountPrev" class="form-label">Deduction Amount ($)</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="deductionAmountPrev" name="deductionAmount" required>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="deductionReasonPrev" class="form<label for="deductionReasonPrev" class="form-label">Reason for Deduction</label>
+                    <select class="form-select mb-2" id="deductionReasonPrev" name="deductionReason">
+                      <option value="damage">Equipment Damage</option>
+                      <option value="absence">Unexcused Absence</option>
+                      <option value="error">Error Correction</option>
+                      <option value="other">Other (specify below)</option>
+                    </select>
+                    <textarea class="form-control" id="deductionNotePrev" name="deductionNote" rows="3" placeholder="Additional details about the deduction..."></textarea>
+                  </div>
+                  
+                  <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    This deduction will be applied to the previous month's payment for this employee.
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-danger">Apply Deduction</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    <% } %>
+
+    <!-- Bottom Navigation - For mobile -->
+    <div class="d-md-none bottom-nav">
+      <a href="/dashboard" class="bottom-nav-item active">
+        <i class="fas fa-tachometer-alt bottom-nav-icon"></i>
+        Dashboard
+      </a>
+      <% if (user.role === 'employee') { %>
+        <a href="#" class="bottom-nav-item" data-bs-toggle="modal" data-bs-target="#newRequestModal">
+          <i class="fas fa-plus-circle bottom-nav-icon"></i>
+          New Request
+        </a>
+      <% } else { %>
+        <a href="/history" class="bottom-nav-item">
+          <i class="fas fa-history bottom-nav-icon"></i>
+          History
+        </a>
+      <% } %>
+      <% if (user.role === 'admin' || user.role === 'ceo' || user.role === 'tech') { %>
+      <a href="/reports" class="bottom-nav-item">
+        <i class="fas fa-chart-bar bottom-nav-icon"></i>
+        Reports
+      </a>
+      <% } else { %>
+      <a href="/history" class="bottom-nav-item">
+        <i class="fas fa-history bottom-nav-icon"></i>
+        History
+      </a>
+      <% } %>
+      <a href="/logout" class="bottom-nav-item">
+        <i class="fas fa-sign-out-alt bottom-nav-icon"></i>
+        Logout
+      </a>
+    </div>
+
+  </div> <!-- End of dashboard-container -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+    
+    // Add active class to current navigation item
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentLocation = location.pathname;
+      const navItems = document.querySelectorAll('.nav-link');
+      navItems.forEach(item => {
+        if(item.getAttribute('href') === currentLocation) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
 
   <script>
-    function toggleRequests(userId) {
-      const requestHistory = document.getElementById(`requests-${userId}`);
-      if (requestHistory.style.display === 'none' || requestHistory.style.display === '') {
-        requestHistory.style.display = 'block';
-      } else {
-        requestHistory.style.display = 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+      // Request filtering functionality
+      const filterButtons = document.querySelectorAll('.btn-outline-secondary');
+      
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Remove active class from all buttons
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          
+          // Add active class to the clicked button
+          this.classList.add('active');
+          
+          // Get the filter type from the button text
+          const filterType = this.innerText.trim().toLowerCase();
+          
+          // Get all request cards
+          const requestCards = document.querySelectorAll('.request-card');
+          
+          // Show/hide request cards based on the filter
+          requestCards.forEach(card => {
+            if (filterType === 'all') {
+              card.style.display = 'block';
+            } else if (filterType === 'pending') {
+              if (card.classList.contains('request-pending')) {
+                card.style.display = 'block';
+              } else {
+                card.style.display = 'none';
+              }
+            } else if (filterType === 'approved') {
+              if (card.classList.contains('request-supervisor') || card.classList.contains('request-admin')) {
+                card.style.display = 'block';
+              } else {
+                card.style.display = 'none';
+              }
+            } else if (filterType === 'signed off') {
+              if (card.classList.contains('request-ceo')) {
+                card.style.display = 'block';
+              } else {
+                card.style.display = 'none';
+              }
+            }
+          });
+        });
+      });
+
+      // Month switcher functionality
+      const monthDropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
+      const monthDropdownButton = document.getElementById('monthDropdown');
+      
+      if (monthDropdownItems.length > 0 && monthDropdownButton) {
+        monthDropdownItems.forEach(item => {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Update the dropdown button text
+            monthDropdownButton.innerText = this.innerText;
+            
+            // Get the month and year from the text
+            const monthYearText = this.innerText.trim();
+            
+            // TODO: Update the monthly summaries based on the selected month
+            // This would typically involve an AJAX call to the server
+            // For now, we'll just reload the page with the month and year as query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Extract month and year from text (format: "Month YYYY")
+            const parts = monthYearText.split(' ');
+            const month = getMonthNumber(parts[0]);
+            const year = parseInt(parts[1]);
+            
+            urlParams.set('month', month);
+            urlParams.set('year', year);
+            
+            window.location.href = `/dashboard?${urlParams.toString()}`;
+          });
+        });
       }
-    }
+      
+      // Helper function to convert month name to number
+      function getMonthNumber(monthName) {
+        const months = {
+          'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+          'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11
+        };
+        return months[monthName] || 0;
+      }
+    });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
